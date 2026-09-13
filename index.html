@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TD System Reference — Love Church Broadcast</title>
+<link rel="stylesheet" href="https://use.typekit.net/swt1bff.css">
+<style>
+  :root{
+    --charcoal:#1A1A1A;
+    --panel:#242424;
+    --panel-alt:#2B2B2B;
+    --pink:#E6007E;
+    --white:#FFFFFF;
+    --muted:#9A9A9A;
+    --line:#3A3A3A;
+    --yellow:#E8C547;
+    --black-btn:#111111;
+    --blue:#3E8EDE;
+    --purple:#8E5CD9;
+    --teal:#2FBFA0;
+    --font: "neue-haas-grotesk-display", Archivo, Arial, Helvetica, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--charcoal);color:var(--white);font-family:var(--font);}
+  body{display:flex;min-height:100vh;}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:230px;flex-shrink:0;background:#141414;border-right:1px solid var(--line);
+    padding:22px 0;position:sticky;top:0;height:100vh;overflow-y:auto;
+  }
+  .brand{padding:0 20px 20px 20px;border-bottom:1px solid var(--line);margin-bottom:14px;}
+  .brand .mark{color:var(--pink);font-weight:800;font-size:11px;letter-spacing:0.08em;}
+  .brand h1{font-size:17px;margin:6px 0 2px 0;font-weight:700;line-height:1.25;}
+  .brand p{font-size:12px;color:var(--muted);margin:0;}
+
+  nav.tabs{display:flex;flex-direction:column;padding:0 10px;gap:2px;}
+  nav.tabs button{
+    text-align:left;background:transparent;border:none;color:var(--muted);
+    font-family:var(--font);font-size:14.5px;font-weight:600;padding:11px 12px;border-radius:6px;
+    cursor:pointer;transition:background .15s ease,color .15s ease;
+  }
+  nav.tabs button:hover{background:var(--panel);color:var(--white);}
+  nav.tabs button.active{background:var(--pink);color:var(--white);}
+
+  .sidebar-foot{padding:16px 20px 0 20px;margin-top:16px;border-top:1px solid var(--line);}
+  .sidebar-foot p{font-size:11px;color:var(--muted);line-height:1.5;margin:0;}
+
+  /* ---------- Main ---------- */
+  main{flex:1;padding:34px 44px 60px 44px;max-width:1180px;}
+  .view{display:none;}
+  .view.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  h2.pagetitle{font-size:26px;margin:0 0 4px 0;font-weight:800;}
+  p.subtitle{color:var(--muted);font-size:14.5px;margin:0 0 26px 0;}
+
+  .search{
+    width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);
+    color:var(--white);font-family:var(--font);font-size:14px;padding:10px 14px;border-radius:7px;
+    margin-bottom:22px;
+  }
+  .search::placeholder{color:var(--muted);}
+  .search:focus{outline:none;border-color:var(--pink);}
+
+  section.block{margin-bottom:30px;}
+  h3.blocktitle{
+    font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--pink);
+    font-weight:700;margin:0 0 10px 0;padding-bottom:8px;border-bottom:1px solid var(--line);
+  }
+
+  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel);border-radius:8px;overflow:hidden;}
+  thead th{
+    background:var(--panel-alt);color:var(--muted);text-align:left;font-weight:700;
+    font-size:12px;text-transform:uppercase;letter-spacing:.03em;padding:10px 12px;border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:10px 12px;border-bottom:1px solid var(--line);color:var(--white);}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover td{background:#2E2E2E;}
+  tr.hidden-row{display:none;}
+
+  .note{
+    background:rgba(230,0,126,0.08);border:1px solid rgba(230,0,126,0.4);border-radius:7px;
+    padding:12px 16px;font-size:13.5px;color:var(--white);margin-top:14px;line-height:1.5;
+  }
+  .note b{color:var(--pink);}
+
+  /* ---------- Overview ---------- */
+  .flow-strip{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 8px 0;}
+  .flow-node{
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 18px;
+    font-weight:700;font-size:14.5px;min-width:120px;text-align:center;
+  }
+  .flow-arrow{color:var(--pink);font-size:20px;font-weight:700;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:8px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:16px;cursor:pointer;transition:border-color .15s;}
+  .card:hover{border-color:var(--pink);}
+  .card h4{margin:0 0 6px 0;font-size:15px;}
+  .card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5;}
+
+  /* ---------- Panel Map ---------- */
+  .panel-wrap{display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start;}
+  .panel-grid{display:grid;grid-template-columns:repeat(10,52px);gap:6px;}
+  .pbtn{
+    width:52px;height:44px;border-radius:5px;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:13px;color:#111;cursor:pointer;border:2px solid transparent;
+    transition:transform .1s ease, border-color .1s ease;user-select:none;
+  }
+  .pbtn:hover{transform:translateY(-2px);}
+  .pbtn.selected{border-color:var(--white);}
+  .pbtn.empty{background:#2B2B2B;color:#555;cursor:default;}
+  .pbtn.empty:hover{transform:none;}
+  .c-yellow{background:var(--yellow);}
+  .c-black{background:#3d3d3d;color:#fff;}
+  .c-blue{background:var(--blue);color:#fff;}
+  .c-purple{background:var(--purple);color:#fff;}
+  .c-teal{background:var(--teal);color:#08221c;}
+  .panel-legend{font-size:11px;color:var(--muted);margin-top:10px;}
+  .shift-label{grid-column:1/-1;font-size:11px;color:var(--muted);margin:14px 0 2px 0;text-transform:uppercase;letter-spacing:.04em;}
+
+  .detail-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:20px;min-width:260px;flex:1;
+    max-width:360px;
+  }
+  .detail-card h4{margin:0 0 4px 0;font-size:19px;}
+  .detail-card .tag{display:inline-block;background:var(--pink);color:#fff;font-size:11px;font-weight:700;
+    padding:2px 8px;border-radius:20px;margin-bottom:12px;}
+  .detail-row{display:flex;justify-content:space-between;font-size:13.5px;padding:7px 0;border-bottom:1px solid var(--line);}
+  .detail-row span:first-child{color:var(--muted);}
+  .detail-row:last-child{border-bottom:none;}
+  .detail-empty{color:var(--muted);font-size:13.5px;line-height:1.6;}
+
+  /* ---------- Macro simulator ---------- */
+  .macro-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+  .macro-pick{
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:13px 16px;
+    display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+  }
+  .macro-pick:hover{border-color:var(--pink);}
+  .macro-pick.active{border-color:var(--pink);background:#2E1B25;}
+  .macro-pick .num{
+    background:var(--pink);color:#fff;font-weight:800;font-size:13px;width:28px;height:28px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;margin-right:12px;
+  }
+  .macro-pick-left{display:flex;align-items:center;}
+  .macro-pick-type{font-size:12px;color:var(--muted);}
+
+  .sim{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px;}
+  .sim h4{margin:0 0 4px 0;font-size:18px;}
+  .sim p.desc{color:var(--muted);font-size:13.5px;margin:0 0 18px 0;}
+  .sim-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+  .sim-step{
+    display:flex;gap:14px;align-items:flex-start;padding:12px 14px;border-radius:8px;
+    background:var(--panel-alt);border:1px solid var(--line);opacity:0.35;transition:opacity .2s, border-color .2s;
+  }
+  .sim-step.revealed{opacity:1;border-color:var(--pink);}
+  .sim-step .step-num{
+    background:#3d3d3d;color:#fff;font-weight:800;font-size:12px;min-width:24px;height:24px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .sim-step.revealed .step-num{background:var(--pink);}
+  .sim-step .step-text{font-size:14px;line-height:1.4;}
+  .sim-btn{
+    background:var(--pink);color:#fff;border:none;font-family:var(--font);font-weight:700;font-size:14px;
+    padding:11px 22px;border-radius:7px;cursor:pointer;
+  }
+  .sim-btn:disabled{background:#4a4a4a;cursor:default;}
+  .sim-btn.flash{animation:flash 0.9s infinite;}
+  @keyframes flash{0%,100%{box-shadow:0 0 0 0 rgba(230,0,126,0.6);}50%{box-shadow:0 0 0 8px rgba(230,0,126,0);}}
+  .sim-reset{background:transparent;border:1px solid var(--line);color:var(--muted);font-family:var(--font);
+    font-size:13px;padding:10px 16px;border-radius:7px;cursor:pointer;margin-left:10px;}
+  .sim-reset:hover{color:var(--white);border-color:var(--white);}
+  .sim-controls{display:flex;align-items:center;}
+
+  /* ---------- Accordion (Reference Guide) ---------- */
+  .acc-item{border:1px solid var(--line);border-radius:9px;margin-bottom:10px;overflow:hidden;background:var(--panel);}
+  .acc-head{
+    padding:15px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+    font-weight:700;font-size:15.5px;
+  }
+  .acc-head:hover{background:var(--panel-alt);}
+  .acc-head .chev{color:var(--pink);font-size:14px;transition:transform .2s;}
+  .acc-item.open .chev{transform:rotate(90deg);}
+  .acc-body{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 18px;}
+  .acc-item.open .acc-body{max-height:3000px;padding:0 18px 18px 18px;}
+  .acc-body h5{color:var(--pink);font-size:13.5px;text-transform:uppercase;letter-spacing:.03em;margin:16px 0 6px 0;}
+  .acc-body h5:first-child{margin-top:2px;}
+  .acc-body p{font-size:14.5px;line-height:1.65;color:#E9E9E9;margin:0 0 10px 0;}
+  .acc-body ul{margin:0 0 10px 0;padding-left:20px;}
+  .acc-body li{font-size:14.5px;line-height:1.6;color:#E9E9E9;margin-bottom:6px;}
+  .acc-body table{margin:10px 0 14px 0;}
+
+  @media (max-width:820px){
+    body{flex-direction:column;}
+    .sidebar{width:100%;height:auto;position:relative;}
+    nav.tabs{flex-direction:row;flex-wrap:wrap;}
+    main{padding:24px;}
+    .panel-grid{grid-template-columns:repeat(5,52px);}
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="mark">LOVE CHURCH BROADCAST</div>
+    <h1>TD System Reference</h1>
+    <p>VideoHub · Constellation · Panel</p>
+  </div>
+  <nav class="tabs">
+    <button data-view="overview" class="active">Overview</button>
+    <button data-view="signal">Signal Flow</button>
+    <button data-view="panel">Panel Map</button>
+    <button data-view="keyers">M/E &amp; Keyers</button>
+    <button data-view="macros">Macros</button>
+    <button data-view="guide">Reference Guide</button>
+  </nav>
+  <div class="sidebar-foot">
+    <p>For new TDs and any broadcast producer stepping into the seat. Companion to the printed quick sheets.</p>
+  </div>
+</aside>
+
+<main>
+
+  <!-- ================= OVERVIEW ================= -->
+  <div class="view active" id="view-overview">
+    <h2 class="pagetitle">System Overview</h2>
+    <p class="subtitle">The big picture, before you get into any single panel or table.</p>
+
+    <div class="flow-strip">
+      <div class="flow-node">Sources</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">VideoHub</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Constellation</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Aux Outs</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Hub</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Destinations</div>
+    </div>
+
+    <section class="block">
+      <h3 class="blocktitle">Jump to a section</h3>
+      <div class="cards">
+        <div class="card" data-goto="signal"><h4>Signal Flow</h4><p>Every source and destination — Hub In/Out, Constellation In, and where each M/E's program feed ends up.</p></div>
+        <div class="card" data-goto="panel"><h4>Panel Map</h4><p>Click through the actual button layout on the 2 M/E Advanced Panel 20.</p></div>
+        <div class="card" data-goto="keyers"><h4>M/E &amp; Keyers</h4><p>What each of the 4 M/Es does, and how its USKs and DSKs are built.</p></div>
+        <div class="card" data-goto="macros"><h4>Macros</h4><p>Step through each macro's press sequence, including the flash-ready cue.</p></div>
+        <div class="card" data-goto="guide"><h4>Reference Guide</h4><p>The "why" behind the design — for training and troubleshooting.</p></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3 class="blocktitle">Why this setup exists</h3>
+      <p style="color:#E9E9E9;font-size:14.5px;line-height:1.65;max-width:760px;">Running a modern broadcast/IMAG production means the same camera and content feeds need to go multiple places at once. Rather than wiring each source directly to each destination, this system uses a routing hub as a central patch bay and a switcher to do all the creative decision-making — cuts, keys, transitions — before sending finished feeds back out to wherever they need to go.</p>
+    </section>
+  </div>
+
+  <!-- ================= SIGNAL FLOW ================= -->
+  <div class="view" id="view-signal">
+    <h2 class="pagetitle">Signal Flow Quick Sheet</h2>
+    <p class="subtitle">Sources → VideoHub → Constellation → Aux Outs → Hub → Destinations</p>
+    <input class="search" type="text" placeholder="Search sources, cables, destinations…" oninput="filterTables('view-signal', this.value)">
+
+    <section class="block">
+      <h3 class="blocktitle">Camera &amp; Source Inputs</h3>
+      <table><thead><tr><th>Source</th><th>Hub In</th><th>Hub Out</th><th>Constellation In</th><th>Cable</th></tr></thead>
+      <tbody>
+        <tr><td>Cam 1</td><td>1</td><td>1</td><td>1</td><td>1511</td></tr>
+        <tr><td>Cam 2</td><td>2</td><td>2</td><td>2</td><td>1512</td></tr>
+        <tr><td>Cam 3</td><td>3</td><td>3</td><td>3</td><td>1513</td></tr>
+        <tr><td>Cam 4</td><td>4</td><td>4</td><td>4</td><td>1915</td></tr>
+        <tr><td>Cam 5</td><td>5</td><td>5</td><td>5</td><td>1526</td></tr>
+        <tr><td>Cam 6</td><td>6</td><td>6</td><td>6</td><td>1515</td></tr>
+        <tr><td>Cam 7</td><td>7</td><td>7</td><td>7</td><td>1527</td></tr>
+        <tr><td>Cam 8–10</td><td>8–10</td><td>8–10</td><td>8–10</td><td>TBD</td></tr>
+        <tr><td>LED L / LED R (FOH ProP)</td><td>11 / 12</td><td>11 / 12</td><td>11 / 12</td><td>1420 / 1421</td></tr>
+        <tr><td>BProP Base</td><td>13</td><td>13</td><td>13</td><td>1918</td></tr>
+        <tr><td>BProP Alpha</td><td>14</td><td>14</td><td>14</td><td>1919</td></tr>
+        <tr><td>Confidence Monitor 1 / 2</td><td>15 / 16</td><td>15 / 16</td><td>15 / 16</td><td>1529 / 1528</td></tr>
+        <tr><td>Spare</td><td>25–40</td><td>29–40</td><td>20–40</td><td>—</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="block">
+      <h3 class="blocktitle">M/E Outputs</h3>
+      <table><thead><tr><th>M/E</th><th>Aux Out</th><th>Hub In</th><th>Hub Out</th><th>Destination</th><th>Cable</th></tr></thead>
+      <tbody>
+        <tr><td>M/E 1 PGM (Broadcast)</td><td>1</td><td>17</td><td>17</td><td>Broadcast Monitor</td><td>1419</td></tr>
+        <tr><td>M/E 1 PGM (Broadcast)</td><td>1</td><td>17</td><td>18</td><td>Resi Encoder</td><td>—</td></tr>
+        <tr><td>M/E 1 PGM (Broadcast)</td><td>1</td><td>17</td><td>19</td><td>Lobby TVs (one feed — Environments 12x12 fans out to 4 displays)</td><td>1426</td></tr>
+        <tr><td>M/E 1 PGM (Broadcast)</td><td>1</td><td>17</td><td>28</td><td>Greenroom</td><td>1423</td></tr>
+        <tr><td>M/E 2 PGM (Content Bus)</td><td>2</td><td>18</td><td>—</td><td>Feeds M/E 3 &amp; 4 USK 1 internally only — no external destination</td><td>—</td></tr>
+        <tr><td>M/E 3 PGM (LED Wall L)</td><td>3</td><td>19</td><td>20</td><td>Novastar (LED L)</td><td>—</td></tr>
+        <tr><td>M/E 4 PGM (LED Wall R)</td><td>4</td><td>20</td><td>21</td><td>Novastar (LED R)</td><td>—</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="block">
+      <h3 class="blocktitle">Multiviews — dedicated switcher outputs, not on the Aux bus</h3>
+      <table><thead><tr><th>Multiview</th><th>Hub In</th><th>Hub Out</th><th>Destination</th><th>Cable</th></tr></thead>
+      <tbody>
+        <tr><td>MV1</td><td>21</td><td>23</td><td>Broadcast Multiview Display 1</td><td>1408</td></tr>
+        <tr><td>MV2</td><td>22</td><td>24</td><td>Broadcast Multiview Display 2</td><td>1409</td></tr>
+        <tr><td>MV3</td><td>23</td><td>22</td><td>Broadcast Audio</td><td>1410</td></tr>
+        <tr><td>MV3</td><td>23</td><td>25</td><td>Lighting / Service Production</td><td>1427</td></tr>
+        <tr><td>MV4</td><td>24</td><td>27</td><td>Reserved — future use</td><td>—</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="block">
+      <h3 class="blocktitle">Re-Entry Loop — program feeds returning to Constellation</h3>
+      <table><thead><tr><th>Signal</th><th>Aux Out</th><th>Constellation SDI In</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Broadcast PGM</td><td>15</td><td>17</td><td>Monitoring / re-entry</td></tr>
+        <tr><td>Clean Feed 1</td><td>16</td><td>18</td><td>Monitoring / re-entry</td></tr>
+        <tr><td>IMAG PGM</td><td>17</td><td>19</td><td>Monitoring / re-entry</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="block">
+      <h3 class="blocktitle">Camera Control</h3>
+      <table><thead><tr><th>Camera</th><th>Aux Out</th><th>Control Cable</th></tr></thead>
+      <tbody>
+        <tr><td>Cam 1</td><td>5</td><td>1411</td></tr>
+        <tr><td>Cam 2</td><td>6</td><td>1412</td></tr>
+        <tr><td>Cam 3</td><td>7</td><td>1413</td></tr>
+        <tr><td>Cam 4–10</td><td>8–14</td><td>TBD</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="block">
+      <h3 class="blocktitle">Spare Capacity</h3>
+      <table><thead><tr><th>Location</th><th>Range</th><th>Count</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Hub Inputs</td><td>25–40</td><td>16 spare</td><td>Available for new cameras, sources, or devices</td></tr>
+        <tr><td>Hub Outputs</td><td>29–40</td><td>13 spare</td><td>Excludes Hub Out 27, reserved for MV4 future use</td></tr>
+        <tr><td>Constellation Inputs</td><td>20–40</td><td>21 spare</td><td>Room for new sources beyond the 19 currently in use</td></tr>
+        <tr><td>Constellation Aux Outputs</td><td>18–24</td><td>7 spare</td><td>Room for new program feeds or additional camera control</td></tr>
+      </tbody></table>
+    </section>
+  </div>
+
+  <!-- ================= PANEL MAP ================= -->
+  <div class="view" id="view-panel">
+    <h2 class="pagetitle">Panel Map</h2>
+    <p class="subtitle">2 M/E Advanced Panel 20 — click a button to see its full routing</p>
+
+    <div class="panel-wrap">
+      <div>
+        <div class="panel-grid" id="panel-grid"></div>
+        <div class="shift-label">Shift layer (buttons 21–40 — hold Shift key right of bus)</div>
+        <div class="panel-grid" id="panel-grid-shift"></div>
+        <p class="panel-legend">Colors match the physical button caps on the panel.</p>
+      </div>
+      <div class="detail-card" id="panel-detail">
+        <div class="detail-empty">Click any button on the panel to see what it does — routing, cable, and any linked macro.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= M/E & KEYERS ================= -->
+  <div class="view" id="view-keyers">
+    <h2 class="pagetitle">M/E &amp; Keyer Quick Sheet</h2>
+    <p class="subtitle">What each M/E does, and how its keys are built</p>
+    <input class="search" type="text" placeholder="Search keys, sources, functions…" oninput="filterTables('view-keyers', this.value)">
+
+    <section class="block">
+      <h3 class="blocktitle">M/E 1 — Broadcast Program (this is what airs) — Upstream Keyers</h3>
+      <table><thead><tr><th>Key</th><th>Type</th><th>Source</th><th>Function</th></tr></thead>
+      <tbody>
+        <tr><td>USK 1</td><td>DVE</td><td>BProP Alpha</td><td>Lower third slides up from bottom</td></tr>
+        <tr><td>USK 2</td><td>DVE</td><td>Cam 2</td><td>Sidebar — camera slides over to make room</td></tr>
+        <tr><td>USK 3</td><td>DVE</td><td>BProP Alpha</td><td>Sidebar graphic slides in</td></tr>
+        <tr><td>USK 4</td><td>Luma Key</td><td>BProP Base + BProP Alpha</td><td>Lower third fade in (separate look from USK 1) — tied to Macro 6</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="block">
+      <h3 class="blocktitle">M/E 1 — Downstream Keyers (DSK)</h3>
+      <table><thead><tr><th>Key</th><th>Type</th><th>Source</th><th>Function</th></tr></thead>
+      <tbody>
+        <tr><td>DSK 1</td><td>Luma Key</td><td>BProP Alpha</td><td>Downstream overlay, independent of USK stack</td></tr>
+        <tr><td>DSK 2</td><td>Luma Key*</td><td>Media Player 1</td><td>Mimics DSK 1 — overlay from Media Player 1</td></tr>
+        <tr><td>DSK 3</td><td>Luma Key*</td><td>Media Player 2</td><td>Mimics DSK 1 — overlay from Media Player 2</td></tr>
+        <tr><td>DSK 4</td><td>Luma Key*</td><td>Media Player 3</td><td>Mimics DSK 1 — overlay from Media Player 3</td></tr>
+      </tbody></table>
+      <div class="note"><b>Note:</b> *DSK 2–4 key type is assumed to match DSK 1 (Luma) — not yet confirmed. DSKs sit downstream of the USK stack, on top of everything else on M/E 1.</div>
+    </section>
+
+    <section class="block">
+      <h3 class="blocktitle">M/E 2 — Content Bus (no direct output)</h3>
+      <table><thead><tr><th>Key</th><th>Type</th><th>Source</th><th>Function</th></tr></thead>
+      <tbody><tr><td>—</td><td>—</td><td>—</td><td>No keys on M/E 2 itself — it's a feed source only, shared into M/E 3 &amp; M/E 4</td></tr></tbody></table>
+    </section>
+
+    <section class="block">
+      <h3 class="blocktitle">M/E 3 — LED Wall (Left)</h3>
+      <table><thead><tr><th>Key</th><th>Type</th><th>Source</th><th>Function</th></tr></thead>
+      <tbody>
+        <tr><td>USK 1</td><td>DVE</td><td>M/E 2 PGM</td><td>Centered IMAG — left half of split image</td></tr>
+        <tr><td>USK 2</td><td>DVE</td><td>Live / manual choice</td><td>Movable PIP box, manually positioned</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="block">
+      <h3 class="blocktitle">M/E 4 — LED Wall (Right)</h3>
+      <table><thead><tr><th>Key</th><th>Type</th><th>Source</th><th>Function</th></tr></thead>
+      <tbody>
+        <tr><td>USK 1</td><td>DVE</td><td>M/E 2 PGM</td><td>Centered IMAG — right half of split image</td></tr>
+        <tr><td>USK 2</td><td>DVE</td><td>Live / manual choice</td><td>Movable PIP box, manually positioned</td></tr>
+      </tbody></table>
+      <div class="note"><b>Note:</b> M/E 3 USK 1 and M/E 4 USK 1 are always used together via Macro 1 (IMAG) — they split ONE centered image across both LED wall halves, not two separate images.</div>
+    </section>
+  </div>
+
+  <!-- ================= MACROS ================= -->
+  <div class="view" id="view-macros">
+    <h2 class="pagetitle">Macro Simulator</h2>
+    <p class="subtitle">Pick a macro, then press through its sequence just like on the panel</p>
+
+    <div class="macro-list" id="macro-list"></div>
+
+    <div class="sim" id="sim-panel"></div>
+
+    <div class="note" style="margin-top:20px;"><b>Note:</b> For step-sequence macros, the macro button on the panel will FLASH when it's ready for the next press. Wait for the flash before pressing again — pressing early can interrupt the sequence.</div>
+  </div>
+
+  <!-- ================= REFERENCE GUIDE ================= -->
+  <div class="view" id="view-guide">
+    <h2 class="pagetitle">TD System Reference Guide</h2>
+    <p class="subtitle">The "why" behind the design — for training and troubleshooting</p>
+    <div id="accordion"></div>
+  </div>
+
+</main>
+
+<script>
+/* ---------------- Tab switching ---------------- */
+const tabButtons = document.querySelectorAll('nav.tabs button');
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  tabButtons.forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  window.scrollTo(0,0);
+}
+tabButtons.forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+document.querySelectorAll('.card[data-goto]').forEach(c=>{
+  c.addEventListener('click',()=>showView(c.dataset.goto));
+});
+
+/* ---------------- Table search filter ---------------- */
+function filterTables(viewId, query){
+  const q = query.trim().toLowerCase();
+  const rows = document.querySelectorAll('#'+viewId+' tbody tr');
+  rows.forEach(r=>{
+    const text = r.textContent.toLowerCase();
+    r.classList.toggle('hidden-row', q.length>0 && !text.includes(q));
+  });
+}
+
+/* ---------------- Panel Map data ---------------- */
+const panelPrimary = [
+  {btn:1,label:'Cam 1',color:'c-yellow',hubIn:'1',hubOut:'1',constIn:'1',cable:'1511',dest:'Live source — any M/E'},
+  {btn:2,label:'Cam 2',color:'c-yellow',hubIn:'2',hubOut:'2',constIn:'2',cable:'1512',dest:'Live source — also USK 2 source on M/E 1 (sidebar)'},
+  {btn:3,label:'Cam 3',color:'c-yellow',hubIn:'3',hubOut:'3',constIn:'3',cable:'1513',dest:'Live source — any M/E'},
+  {btn:4,label:'Cam 4',color:'c-yellow',hubIn:'4',hubOut:'4',constIn:'4',cable:'1915',dest:'Live source — camera control not yet wired'},
+  {btn:5,label:'Cam 5',color:'c-yellow',hubIn:'5',hubOut:'5',constIn:'5',cable:'1526',dest:'Live source — camera control not yet wired'},
+  {btn:6,label:'Cam 6',color:'c-yellow',hubIn:'6',hubOut:'6',constIn:'6',cable:'1515',dest:'Live source — camera control not yet wired'},
+  {btn:7,label:'Cam 7',color:'c-yellow',hubIn:'7',hubOut:'7',constIn:'7',cable:'1527',dest:'Live source — camera control not yet wired'},
+  {btn:8,label:'Cam 8',empty:true,note:'Future / TBD — converter type not yet decided'},
+  {btn:9,label:'Cam 9',empty:true,note:'Future / TBD — converter type not yet decided'},
+  {btn:10,label:'Cam 10',empty:true,note:'Future / TBD — converter type not yet decided'},
+  {btn:11,label:'LED L',color:'c-black',hubIn:'11',hubOut:'11',constIn:'11',cable:'1420',dest:'Panel labeled "FOH ProP L" — feeds M/E 3 IMAG path via M/E 2'},
+  {btn:12,label:'LED R',color:'c-black',hubIn:'12',hubOut:'12',constIn:'12',cable:'1421',dest:'Panel labeled "FOH ProP R" — feeds M/E 4 IMAG path via M/E 2'},
+  {btn:13,label:'BProP Alpha',color:'c-blue',hubIn:'14',hubOut:'14',constIn:'14',cable:'1919',dest:'Used in USK 1, USK 3, USK 4, and DSK 1 on M/E 1'},
+  {btn:14,label:'Black',color:'c-purple',hubIn:'—',hubOut:'—',constIn:'—',dest:'Internal black source'},
+  {btn:15,label:'Media Player 1',color:'c-teal',hubIn:'—',hubOut:'—',constIn:'—',dest:'Source for DSK 2'},
+  {btn:16,label:'Media Player 2',color:'c-teal',hubIn:'—',hubOut:'—',constIn:'—',dest:'Source for DSK 3'},
+  {btn:17,label:'Media Player 3',color:'c-teal',hubIn:'—',hubOut:'—',constIn:'—',dest:'Source for DSK 4'},
+  {btn:18,label:'Color Bars',color:'c-purple',hubIn:'—',hubOut:'—',constIn:'—',dest:'Internal test source'},
+  {btn:19,label:'Broadcast PGM',color:'c-blue',hubIn:'17 (re-entry)',hubOut:'—',constIn:'17',cable:'1419',dest:'M/E 1 program, re-entered for monitoring'},
+  {btn:20,label:'Clean Feed 1',color:'c-blue',hubIn:'18 (re-entry)',hubOut:'—',constIn:'18',dest:'Re-entered for monitoring'},
+];
+const panelShift = [
+  {btn:21,label:'Unassigned',empty:true,note:'Unassigned / unknown as of this document'},
+  {btn:22,label:'IMAG PGM',color:'c-blue',hubIn:'19 (re-entry)',hubOut:'—',constIn:'19',dest:'Re-entered for monitoring'},
+  {btn:23,label:'Unassigned',empty:true,note:'Unassigned / unknown as of this document'},
+  {btn:24,label:'SuperSource 1',color:'c-teal',hubIn:'—',hubOut:'—',constIn:'—',dest:'Not yet documented in routing'},
+  {btn:25,label:'SuperSource 2',color:'c-teal',hubIn:'—',hubOut:'—',constIn:'—',dest:'Not yet documented in routing'},
+];
+for(let i=26;i<=40;i++){ panelShift.push({btn:i,label:'—',empty:true,note:'Unassigned / unknown as of this document'}); }
+
+function buildPanelGrid(containerId, data){
+  const grid = document.getElementById(containerId);
+  data.forEach(item=>{
+    const div = document.createElement('div');
+    div.className = 'pbtn ' + (item.empty ? 'empty' : item.color);
+    div.textContent = item.btn;
+    div.title = item.label;
+    div.addEventListener('click', ()=>selectPanelButton(item));
+    grid.appendChild(div);
+  });
+}
+buildPanelGrid('panel-grid', panelPrimary);
+buildPanelGrid('panel-grid-shift', panelShift);
+
+function selectPanelButton(item){
+  document.querySelectorAll('.pbtn').forEach(b=>b.classList.remove('selected'));
+  const allBtns = [...document.querySelectorAll('#panel-grid .pbtn'), ...document.querySelectorAll('#panel-grid-shift .pbtn')];
+  allBtns[item.btn-1] && allBtns.find(b=>b.textContent==String(item.btn) )?.classList.add('selected');
+
+  const el = document.getElementById('panel-detail');
+  if(item.empty){
+    el.innerHTML = `<h4>Button ${item.btn}</h4><span class="tag">UNASSIGNED</span><p class="detail-empty">${item.note}</p>`;
+    return;
+  }
+  el.innerHTML = `
+    <h4>${item.label}</h4>
+    <span class="tag">Button ${item.btn}</span>
+    <div class="detail-row"><span>Hub In</span><span>${item.hubIn}</span></div>
+    <div class="detail-row"><span>Hub Out</span><span>${item.hubOut}</span></div>
+    <div class="detail-row"><span>Constellation In</span><span>${item.constIn}</span></div>
+    ${item.cable ? `<div class="detail-row"><span>Cable</span><span>${item.cable}</span></div>` : ''}
+    <div class="detail-row"><span>Notes</span><span style="text-align:right;max-width:180px;">${item.dest}</span></div>
+  `;
+}
+
+/* ---------------- Macro simulator data ---------------- */
+const macros = [
+  {id:1,name:'IMAG',type:'Single-press (toggle)',steps:['Fades up M/E 3 USK 1 + M/E 4 USK 1 — brings up M/E 2 PGM centered across both LED wall halves','Fades IMAG back off']},
+  {id:2,name:'Lower Third In',type:'Single-press',steps:['Turns on M/E 1 USK 1 — lower third pushes up from bottom']},
+  {id:3,name:'Lower Third Out',type:'Single-press',steps:["Pushes lower third graphic out, drops M/E 1 USK 1"]},
+  {id:4,name:'Sidebar In',type:'Step sequence',steps:['Turns on M/E 1 USK 2 + USK 3','Brings Cam 2 up','Slides Cam 2 over + pushes in sidebar graphic']},
+  {id:5,name:'Sidebar Out',type:'Step sequence',steps:['Cam 2 slides back to full screen + sidebar pushes out simultaneously, drops keys',"Cuts from Cam 2 to whatever's live on Broadcast PGM"]},
+  {id:6,name:'Lower Third Fade',type:'Single-press (toggle)',steps:['Luma key fade in/out — linked to M/E 1 USK 4 (separate look from Macro 2/3\'s slide-up version)']},
+];
+
+const macroListEl = document.getElementById('macro-list');
+macros.forEach(m=>{
+  const div = document.createElement('div');
+  div.className = 'macro-pick';
+  div.id = 'macro-pick-'+m.id;
+  div.innerHTML = `<div class="macro-pick-left"><span class="num">${m.id}</span><span>${m.name}</span></div><span class="macro-pick-type">${m.type}</span>`;
+  div.addEventListener('click', ()=>loadMacro(m.id));
+  macroListEl.appendChild(div);
+});
+
+let currentMacro = null;
+let revealedCount = 0;
+
+function loadMacro(id){
+  currentMacro = macros.find(m=>m.id===id);
+  revealedCount = 0;
+  document.querySelectorAll('.macro-pick').forEach(p=>p.classList.remove('active'));
+  document.getElementById('macro-pick-'+id).classList.add('active');
+  renderSim();
+}
+
+function renderSim(){
+  const m = currentMacro;
+  const panel = document.getElementById('sim-panel');
+  if(!m){
+    panel.innerHTML = `<p class="desc">Select a macro above to step through it.</p>`;
+    return;
+  }
+  const isMulti = m.steps.length > 1;
+  const stepsHtml = m.steps.map((s,i)=>`
+    <div class="sim-step ${i<revealedCount ? 'revealed':''}">
+      <div class="step-num">${i+1}</div>
+      <div class="step-text">${i<revealedCount ? s : (isMulti ? 'Press ' + (i+1) + ' — not yet pressed' : 'Not yet pressed')}</div>
+    </div>
+  `).join('');
+  const done = revealedCount >= m.steps.length;
+  const btnLabel = revealedCount===0 ? 'Press Macro ' + m.id : (done ? 'Sequence Complete' : 'Press Again (Step ' + (revealedCount+1) + ')');
+  panel.innerHTML = `
+    <h4>Macro ${m.id} — ${m.name}</h4>
+    <p class="desc">${m.type}${isMulti ? ' — ' + m.steps.length + ' presses' : ''}</p>
+    <div class="sim-steps">${stepsHtml}</div>
+    <div class="sim-controls">
+      <button class="sim-btn ${!done && revealedCount>0 ? 'flash':''}" id="sim-press" ${done?'disabled':''}>${btnLabel}</button>
+      <button class="sim-reset" id="sim-reset">Reset</button>
+    </div>
+  `;
+  document.getElementById('sim-press').addEventListener('click', ()=>{
+    if(revealedCount < m.steps.length){ revealedCount++; renderSim(); }
+  });
+  document.getElementById('sim-reset').addEventListener('click', ()=>{
+    revealedCount = 0; renderSim();
+  });
+}
+renderSim();
+
+/* ---------------- Reference Guide accordion ---------------- */
+const guideSections = [
+  {
+    title:'1. System Overview',
+    body:`
+      <h5>Why this setup exists</h5>
+      <p>Running a modern broadcast/IMAG production means the same camera and content feeds need to go multiple places at once — out to the broadcast stream, onto the LED walls, into confidence monitors, and into multiviews for operators to watch everything at once. Rather than wiring each source directly to each destination, this system uses a routing hub as a central patch bay and a switcher to do all the creative decision-making — cuts, keys, transitions — before sending finished feeds back out to wherever they need to go.</p>
+      <h5>The three-layer signal path</h5>
+      <ul>
+        <li><b>Sources → VideoHub (Blackmagic 40x40):</b> Every camera, graphics feed (BProP), LED input, and confidence monitor lands here first — a giant patch panel that doesn't make creative decisions, it just routes signals.</li>
+        <li><b>VideoHub → Constellation (ATEM 4 M/E):</b> The Hub sends all sources into the Constellation switcher, where the actual production happens — camera cuts, keys, graphics, and the four M/E buses that build the final looks.</li>
+        <li><b>Constellation → Hub → Destinations:</b> Once the switcher has built the final program feeds, those outputs go back through the Hub one more time to reach their final destinations.</li>
+      </ul>
+      <p>This "out and back through the Hub" pattern means every signal — raw or processed — is available at the same central patch point, so a new source or destination can be added without rewiring the whole system.</p>
+    `
+  },
+  {
+    title:'2. Signal Flow Deep Dive',
+    body:`
+      <h5>Following a camera from lens to air</h5>
+      <p>Take Cam 1 as an example: it hits Hub In 1, routes out Hub Out 1 into Constellation SDI In 1, and becomes a live source on the panel (Button 1, yellow). If it's cut to Broadcast PGM, that feed leaves on Aux Out 1, back into Hub In 17, and the Hub fans it out to the Broadcast Monitor, Resi Encoder, Lobby TVs, and Greenroom simultaneously — one path in, one path back through the Hub, then it fans out to as many destinations as needed.</p>
+      <h5>Why the re-entry loop exists</h5>
+      <p>Broadcast PGM, Clean Feed 1, and IMAG PGM are routed back into the Constellation (SDI Ins 17–19) so the switcher can monitor its own outputs as live sources. That lets the TD preview what's actually leaving the building right on the panel, and helps confirm whether a downstream issue is happening before or after the switcher.</p>
+      <h5>Why multiviews are separate</h5>
+      <p>MV1–MV4 come off dedicated physical outputs, not the 24-slot Aux bus. That keeps 4 always-on monitoring feeds from permanently consuming Aux slots, and guarantees they're always live regardless of what an operator assigns elsewhere.</p>
+    `
+  },
+  {
+    title:'3. Understanding the M/E Structure',
+    body:`
+      <h5>Why M/E 2 exists — the "content bus" concept</h5>
+      <p>M/E 2 doesn't feed anything external — its only job is to act as a shared content source for M/E 3 and M/E 4. Without it, keeping both LED wall halves in sync would mean manually matching two separate sources every time. Instead, one feed on M/E 2 automatically stays in sync across both halves, since they key from the exact same source at the exact same moment.</p>
+      <h5>M/E 3 &amp; M/E 4 — matched pair vs. independent</h5>
+      <ul>
+        <li><b>USK 1 — matched pair:</b> Both pull from M/E 2 PGM and trigger together via Macro 1 (IMAG), creating one continuous centered image across both halves.</li>
+        <li><b>USK 2 — independent:</b> Each side's manual PIP box can hold a different feed in a different position, since it isn't tied to M/E 2 or the other LED half.</li>
+      </ul>
+      <h5>Why M/E 1 is the "final" layer</h5>
+      <p>M/E 1 is where the actual broadcast program gets built — all audience-facing graphics live here, because M/E 1's output is the one feed that leaves the building as the final broadcast product. M/E 2, 3, and 4 exist to serve the LED walls in the room.</p>
+    `
+  },
+  {
+    title:'4. Keyer Logic',
+    body:`
+      <h5>DVE vs. Luma Key</h5>
+      <p><b>DVE</b> treats the source as a re-sizable, movable box — the transparency is defined by the box edges, not the picture content, which is why it's used anywhere something needs to slide or resize. <b>Luma key</b> reads brightness to decide what's transparent, which is how a graphic gets real, non-rectangular edges rather than sitting in a hard-edged box.</p>
+      <h5>Why each was chosen on M/E 1</h5>
+      <ul>
+        <li><b>USK 1 (DVE):</b> Lower third slides up as a rectangular panel — tied to Macro 2/3.</li>
+        <li><b>USK 2 (DVE):</b> Sidebar camera slides over to make room.</li>
+        <li><b>USK 3 (DVE):</b> Sidebar graphic slides in, in sync with USK 2.</li>
+        <li><b>USK 4 (Luma):</b> A second, separate lower-third look that fades in based on brightness — a softer, distinct look from USK 1's slide-up version, tied to Macro 6.</li>
+      </ul>
+      <h5>How the keys stack on M/E 1</h5>
+      <p>The base layer is whatever's on Program. USK 2 &amp; 3 move together via Macro 4 for the sidebar look. USK 1 and USK 4 are two independent lower-third looks that can be used depending on which style fits the moment. DSKs 1–4 sit downstream of all of this, layered on top of everything else.</p>
+    `
+  },
+  {
+    title:'5. Macro Behavior & Troubleshooting',
+    body:`
+      <h5>Why step-sequence macros exist</h5>
+      <p>Some looks involve multiple ordered actions. Doing that as separate manual presses in the right order under live production pressure invites mistakes. Step-sequence macros collapse the whole sequence into one button, pressed multiple times in order — the system handles timing internally.</p>
+      <h5>The flash-ready cue</h5>
+      <p>When a step-sequence macro is running, the button flashes to signal it's ready for the next press. Wait for the flash before pressing again — pressing early can interrupt the sequence. If a move looks like it "didn't do anything," check whether the button is flashing before assuming the press failed.</p>
+      <h5>Common troubleshooting checkpoints</h5>
+      <table><thead><tr><th>Symptom</th><th>Likely Checkpoint</th></tr></thead><tbody>
+        <tr><td>Lower third doesn't appear</td><td>Confirm Macro 2 (USK 1 slide) or Macro 6 (USK 4 fade) was triggered, and that BProP is outputting on Alpha/Base</td></tr>
+        <tr><td>Sidebar sequence looks "stuck"</td><td>Check if the macro button is flashing — wait for it rather than re-pressing</td></tr>
+        <tr><td>Sidebar camera doesn't slide over</td><td>Confirm Cam 2 is the live source feeding USK 2</td></tr>
+        <tr><td>IMAG not appearing on LED walls</td><td>Confirm Macro 1 was pressed (fade up) and M/E 2 has active content on Program</td></tr>
+        <tr><td>IMAG stuck on / won't clear</td><td>Macro 1 is a toggle — press it again to fade off rather than looking for a separate "off" button</td></tr>
+        <tr><td>One LED wall half is blank</td><td>Check that specific M/E's USK 1 status directly — they key independently even though triggered together</td></tr>
+        <tr><td>PIP box not showing</td><td>Confirm USK 2 is on and a live source has been manually selected</td></tr>
+      </tbody></table>
+    `
+  },
+  {
+    title:'6. Camera Control Notes',
+    body:`
+      <p>Camera control is currently wired for Cams 1–3 only (Aux Out 5/6/7, control cables 1411/1412/1413). Cams 4–10 don't yet have remote control — any adjustment has to happen at the camera itself. This is tied to which cameras have compatible converter hardware; Cams 8–10 don't have a converter type decided yet at all.</p>
+      <p>For a live troubleshooting call: if a camera's picture looks off, the fix depends entirely on whether it's Cam 1–3 (correct instantly from the panel) or anything else (requires communicating with whoever's physically at that camera).</p>
+    `
+  },
+  {
+    title:'7. Spare Capacity & Growth',
+    body:`
+      <p>Hub: 16 spare inputs (25–40), 13 spare outputs (29–40, excluding 27 reserved for MV4). Constellation: 21 spare SDI inputs (20–40), 7 spare Aux outputs (18–24). Panel: buttons 8–10 reserved for Cams 8–10, buttons 21/23/26–40 currently unassigned.</p>
+      <p>Not every open slot is automatically usable — a camera also needs physical cabling and a compatible converter first. When Cams 4–10 come online, expect updates to the Hub map, Constellation map, camera control table, and panel map all at once, since one new camera touches all four.</p>
+    `
+  },
+];
+
+const accEl = document.getElementById('accordion');
+guideSections.forEach((s,i)=>{
+  const item = document.createElement('div');
+  item.className = 'acc-item' + (i===0 ? ' open' : '');
+  item.innerHTML = `
+    <div class="acc-head"><span>${s.title}</span><span class="chev">▶</span></div>
+    <div class="acc-body">${s.body}</div>
+  `;
+  item.querySelector('.acc-head').addEventListener('click', ()=>{
+    item.classList.toggle('open');
+  });
+  accEl.appendChild(item);
+});
+</script>
+</body>
+</html>
