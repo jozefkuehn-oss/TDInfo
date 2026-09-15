@@ -319,6 +319,7 @@
         <tr><td>Clean Feed 1</td><td>16</td><td>18</td><td>Monitoring / re-entry</td></tr>
         <tr><td>IMAG PGM</td><td>17</td><td>19</td><td>Monitoring / re-entry</td></tr>
       </tbody></table>
+      <div class="note"><b>Note:</b> These three do NOT pass through the VideoHub — they are dedicated Constellation outputs looped directly back into Constellation inputs (Aux Out → Constellation SDI In only). This is a separate, self-contained monitoring loop on the switcher itself.</div>
     </section>
 
     <section class="block">
@@ -482,12 +483,12 @@ const panelPrimary = [
   {btn:16,label:'Media Player 2',color:'c-teal',hubIn:'—',hubOut:'—',constIn:'—',dest:'Source for DSK 3'},
   {btn:17,label:'Media Player 3',color:'c-teal',hubIn:'—',hubOut:'—',constIn:'—',dest:'Source for DSK 4'},
   {btn:18,label:'Color Bars',color:'c-purple',hubIn:'—',hubOut:'—',constIn:'—',dest:'Internal test source'},
-  {btn:19,label:'Broadcast PGM',color:'c-blue',hubIn:'17 (re-entry)',hubOut:'—',constIn:'17',cable:'1419',dest:'M/E 1 program, re-entered for monitoring'},
-  {btn:20,label:'Clean Feed 1',color:'c-blue',hubIn:'18 (re-entry)',hubOut:'—',constIn:'18',dest:'Re-entered for monitoring'},
+  {btn:19,label:'Broadcast PGM',color:'c-blue',hubIn:'Bypasses Hub',hubOut:'\u2014',constIn:'17',dest:'Direct loop on Constellation (Aux Out 15 \u2192 SDI In 17) \u2014 does not pass through the Hub'},
+  {btn:20,label:'Clean Feed 1',color:'c-blue',hubIn:'Bypasses Hub',hubOut:'\u2014',constIn:'18',dest:'Direct loop on Constellation (Aux Out 16 \u2192 SDI In 18) \u2014 does not pass through the Hub'},
 ];
 const panelShift = [
   {btn:21,label:'Unassigned',empty:true,note:'Unassigned / unknown as of this document'},
-  {btn:22,label:'IMAG PGM',color:'c-blue',hubIn:'19 (re-entry)',hubOut:'—',constIn:'19',dest:'Re-entered for monitoring'},
+  {btn:22,label:'IMAG PGM',color:'c-blue',hubIn:'Bypasses Hub',hubOut:'\u2014',constIn:'19',dest:'Direct loop on Constellation (Aux Out 17 \u2192 SDI In 19) \u2014 does not pass through the Hub'},
   {btn:23,label:'Unassigned',empty:true,note:'Unassigned / unknown as of this document'},
   {btn:24,label:'SuperSource 1',color:'c-teal',hubIn:'—',hubOut:'—',constIn:'—',dest:'Not yet documented in routing'},
   {btn:25,label:'SuperSource 2',color:'c-teal',hubIn:'—',hubOut:'—',constIn:'—',dest:'Not yet documented in routing'},
@@ -536,7 +537,7 @@ const macros = [
   {id:3,name:'Lower Third Out',type:'Single-press',steps:["Pushes lower third graphic out, drops M/E 1 USK 1"]},
   {id:4,name:'Sidebar In',type:'Step sequence',steps:['Turns on M/E 1 USK 2 + USK 3','Brings Cam 2 up','Slides Cam 2 over + pushes in sidebar graphic']},
   {id:5,name:'Sidebar Out',type:'Step sequence',steps:['Cam 2 slides back to full screen + sidebar pushes out simultaneously, drops keys',"Cuts from Cam 2 to whatever's live on Broadcast PGM"]},
-  {id:6,name:'Lower Third Fade',type:'Single-press (toggle)',steps:['Luma key fade in/out — linked to M/E 1 USK 4 (separate look from Macro 2/3\'s slide-up version)']},
+  {id:6,name:'Lower Third Fade',type:'Single-press (toggle)',steps:['Fades up M/E 1 USK 4 — luma key lower third (separate look from Macro 2/3\'s slide-up version)','Fades USK 4 back off']},
 ];
 
 const macroListEl = document.getElementById('macro-list');
@@ -616,7 +617,7 @@ const guideSections = [
       <h5>Following a camera from lens to air</h5>
       <p>Take Cam 1 as an example: it hits Hub In 1, routes out Hub Out 1 into Constellation SDI In 1, and becomes a live source on the panel (Button 1, yellow). If it's cut to Broadcast PGM, that feed leaves on Aux Out 1, back into Hub In 17, and the Hub fans it out to the Broadcast Monitor, Resi Encoder, Lobby TVs, and Greenroom simultaneously — one path in, one path back through the Hub, then it fans out to as many destinations as needed.</p>
       <h5>Why the re-entry loop exists</h5>
-      <p>Broadcast PGM, Clean Feed 1, and IMAG PGM are routed back into the Constellation (SDI Ins 17–19) so the switcher can monitor its own outputs as live sources. That lets the TD preview what's actually leaving the building right on the panel, and helps confirm whether a downstream issue is happening before or after the switcher.</p>
+      <p>Broadcast PGM, Clean Feed 1, and IMAG PGM are routed back into the Constellation (SDI Ins 17–19) so the switcher can monitor its own outputs as live sources. This is a direct, self-contained loop on the switcher itself — unlike the M/E 1–4 program feeds, it does NOT pass through the VideoHub. That lets the TD preview what's actually leaving the building right on the panel, and helps confirm whether a downstream issue is happening before or after the switcher.</p>
       <h5>Why multiviews are separate</h5>
       <p>MV1–MV4 come off dedicated physical outputs, not the 24-slot Aux bus. That keeps 4 always-on monitoring feeds from permanently consuming Aux slots, and guarantees they're always live regardless of what an operator assigns elsewhere.</p>
     `
